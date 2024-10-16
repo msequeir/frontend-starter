@@ -220,59 +220,60 @@ class Routes {
     return { msg: "These are your favorite posts", favorites: favoritePosts };
   }
 
-  // // ITINERARY RELATED
-  // @Router.post("/itineraries")
-  // async createItinerary(session: SessionDoc, content: string) {
-  //   const user = Sessioning.getUser(session);
-  //   const created = await Itinerary.create(user, content);
+  // ITINERARY RELATED
+  @Router.post("/itineraries")
+  async createItinerary(session: SessionDoc, content: string) {
+    const user = Sessioning.getUser(session);
+    const created = await Itinerary.create(user, content);
 
-  //   // TODO: Double check Reponses.post()...
-  //   return { msg: created.msg, itinerary: await Responses.itinerary(created.itinerary) };
-  // }
+    // TODO: Double check Reponses.post()...
+    return { msg: created.msg, itinerary: await Responses.itinerary(created.itinerary) };
+  }
 
-  // @Router.patch("/itineraries/:id")
-  // async updateItinerary(session: SessionDoc, id: string, collaboratorId?: string, content?: string) {
-  //   const user = Sessioning.getUser(session);
-  //   const itineraryOid = new ObjectId(id);
+  @Router.patch("/itineraries/:id")
+  async updateItinerary(session: SessionDoc, id: string, collaboratorId?: string, content?: string) {
+    const user = Sessioning.getUser(session);
+    const itineraryOid = new ObjectId(id);
 
-  //   let collaboratorOid;
-  //   if (collaboratorId) {
-  //     collaboratorOid = new ObjectId(collaboratorId);
-  //   }
+    let collaboratorOid;
+    if (collaboratorId) {
+      collaboratorOid = new ObjectId(collaboratorId);
+    }
 
-  //   await Itinerary.assertAuthorIsAllowedToEdit(itineraryOid, user); // Ensure the user is the owner
-  //   return await Itinerary.updateItinerary(itineraryOid, collaboratorOid, content);
-  // }
+    await Itinerary.assertAuthorIsAllowedToEdit(itineraryOid, user); // Ensure the user is the owner
+    return await Itinerary.updateItinerary(itineraryOid, collaboratorOid, content);
+  }
 
-  // @Router.delete("/itineraries/:id")
-  // async deleteItinerary(session: SessionDoc, id: string) {
-  //   const user = Sessioning.getUser(session);
-  //   const oid = new ObjectId(id);
+  @Router.delete("/itineraries/:id")
+  async deleteItinerary(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
 
-  //   await Itinerary.assertAuthorIsAllowedToEdit(oid, user); // Ensure the user is the owner
-  //   return Itinerary.deleteItinerary(oid);
-  // }
+    await Itinerary.assertAuthorIsAllowedToEdit(oid, user); // Ensure the user is the owner
+    return Itinerary.deleteItinerary(oid);
+  }
 
-  // @Router.get("/itineraries/:id")
-  // async getItineraryById(session: SessionDoc, id: string) {
-  //   const itineraryOid = new ObjectId(id);
+  @Router.get("/itineraries/:id")
+  async getItineraryById(session: SessionDoc, id: string) {
+    const itineraryOid = new ObjectId(id);
 
-  //   // Fetch the itinerary by its ID
-  //   const itinerary = await Itinerary.getItineraryById(itineraryOid);
-  //   return Responses.itinerary(itinerary);
-  // }
+    // Fetch the itinerary by its ID
+    const itinerary = await Itinerary.getItineraryById(itineraryOid);
+    return Responses.itinerary(itinerary);
+  }
 
-  // // POSTING RELATED
-  // @Router.get("/itineraries")
-  // @Router.validate(z.object({ author: z.string().optional(), title: z.string().optional() }))
-  // async getItineraries(author?: string, title?: string) {
-  //   if (author) {
-  //     const id = (await Authing.getUserByUsername(author))._id; // TODO: Why is this bugging?
-  //     return await Itinerary.getByAuthor(id);
-  //   }
-  //   const itineraries = await Itinerary.getAllItineraries();
-  //   return Responses.itineraries(itineraries);
-  // }
+  // POSTING RELATED
+  @Router.get("/itineraries")
+  @Router.validate(z.object({ author: z.string().optional(), title: z.string().optional() }))
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getItineraries(author?: string, title?: string) {
+    if (author) {
+      const id = (await Authing.getUserByUsername(author))._id; // TODO: Why is this bugging?
+      return await Itinerary.getByAuthor(id);
+    }
+    const itineraries = await Itinerary.getAllItineraries();
+    return Responses.itineraries(itineraries);
+  }
 }
 
 /** The web app. */
