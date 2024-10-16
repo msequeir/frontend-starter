@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ObjectId } from "mongodb";
 
 import DocCollection, { BaseDoc } from "../framework/doc";
 import { NotAllowedError, NotFoundError } from "./errors";
-
-export interface PostOptions {
-  backgroundColor?: string;
-}
+import ItineraryConcept from "./itinerary";
 
 export interface PostDoc extends BaseDoc {
   author: ObjectId;
-  content: string;
-  options?: PostOptions;
+  title: string;
+  tags: string;
+  rating: number;
+  itineraryId: ObjectId;
+  imageUrls: string[];
 }
 
 /**
@@ -18,32 +19,190 @@ export interface PostDoc extends BaseDoc {
  */
 export default class PostingConcept {
   public readonly posts: DocCollection<PostDoc>;
+  public readonly itineraries: ItineraryConcept;
 
   /**
    * Make an instance of Posting.
    */
-  constructor(collectionName: string) {
+  constructor(collectionName: string, itineraryCollectionName: string) {
     this.posts = new DocCollection<PostDoc>(collectionName);
+    this.itineraries = new ItineraryConcept(itineraryCollectionName);
   }
 
-  async create(author: ObjectId, content: string, options?: PostOptions) {
-    const _id = await this.posts.createOne({ author, content, options });
+  async create(author: ObjectId, title: string, tags: string, rating: number, itineraryId: ObjectId, imageUrl: string) {
+    const itinerary = await this.itineraries.getItineraryById(itineraryId);
+    if (!itinerary) {
+      throw new NotFoundError(`Itinerary ${itineraryId} does not exist!`);
+    }
+    const _id = await this.posts.createOne({ author, title, tags, rating, itineraryId, imageUrls: [imageUrl] });
     return { msg: "Post successfully created!", post: await this.posts.readOne({ _id }) };
   }
 
   async getPosts() {
     // Returns all posts! You might want to page for better client performance
-    return await this.posts.readMany({}, { sort: { _id: -1 } });
+    const posts = await this.posts.readMany({}, { sort: { _id: -1 } });
+    const postsWithItineraries = await Promise.all(
+      posts.map(async (post) => {
+        try {
+          const itinerary = await this.itineraries.getItineraryById(post.itineraryId);
+          return { ...post, itinerary };
+        } catch (error) {
+          // If itinerary is missing (e.g., NotFoundError), continue without it
+          return {
+            ...post,
+            itinerary: { msg: "Itinerary deleted or not found", itineraryId: post.itineraryId },
+          };
+        }
+      }),
+    );
+
+    return postsWithItineraries;
+  }
+
+  async getByAuthorAndTitle(author: ObjectId, searchTitle: string) {
+    const regex = new RegExp(searchTitle, "i");
+    const posts = await this.posts.readMany({ author, title: { $regex: regex } });
+
+    const postsWithItineraries = await Promise.all(
+      posts.map(async (post) => {
+        try {
+          const itinerary = await this.itineraries.getItineraryById(post.itineraryId);
+          return { ...post, itinerary };
+        } catch (error) {
+          // If itinerary is missing, return a fallback message
+          return {
+            ...post,
+            itinerary: { msg: "Itinerary deleted or not found", itineraryId: post.itineraryId },
+          };
+        }
+      }),
+    );
+
+    return postsWithItineraries;
+  }
+
+  async getByTitle(searchTitle: string) {
+    const regex = new RegExp(searchTitle, "i");
+    const posts = await this.posts.readMany({ title: { $regex: regex } });
+
+    const postsWithItineraries = await Promise.all(
+      posts.map(async (post) => {
+        try {
+          const itinerary = await this.itineraries.getItineraryById(post.itineraryId);
+          return { ...post, itinerary };
+        } catch (error) {
+          // If itinerary is missing, return a fallback message
+          return {
+            ...post,
+            itinerary: { msg: "Itinerary deleted or not found", itineraryId: post.itineraryId },
+          };
+        }
+      }),
+    );
+
+    return postsWithItineraries;
   }
 
   async getByAuthor(author: ObjectId) {
-    return await this.posts.readMany({ author });
+    const posts = await this.posts.readMany({ author });
+
+    const postsWithItineraries = await Promise.all(
+      posts.map(async (post) => {
+        try {
+          const itinerary = await this.itineraries.getItineraryById(post.itineraryId);
+          return { ...post, itinerary };
+        } catch (error) {
+          // If itinerary is missing, return a fallback message
+          return {
+            ...post,
+            itinerary: { msg: "Itinerary deleted or not found", itineraryId: post.itineraryId },
+          };
+        }
+      }),
+    );
+
+    return postsWithItineraries;
   }
 
-  async update(_id: ObjectId, content?: string, options?: PostOptions) {
-    // Note that if content or options is undefined, those fields will *not* be updated
-    // since undefined values for partialUpdateOne are ignored.
-    await this.posts.partialUpdateOne({ _id }, { content, options });
+  async getPostsByIds(postIds: ObjectId[]) {
+    const posts = await this.posts.readMany({ _id: { $in: postIds } });
+
+    const postsWithItineraries = await Promise.all(
+      posts.map(async (post) => {
+        try {
+          const itinerary = await this.itineraries.getItineraryById(post.itineraryId);
+          return { ...post, itinerary };
+        } catch (error) {
+          // If itinerary is missing, return a fallback message
+          return {
+            ...post,
+            itinerary: { msg: "Itinerary deleted or not found", itineraryId: post.itineraryId },
+          };
+        }
+      }),
+    );
+
+    return postsWithItineraries;
+  }
+
+  async update(_id: ObjectId, title?: string, tags?: string, rating?: number, itineraryId?: ObjectId, addImageUrl?: string, removeImageUrl?: string) {
+    // Find the existing post to retrieve its current values
+    const currPost = await this.posts.readOne({ _id });
+    if (!currPost) {
+      throw new NotFoundError(`Post ${_id} does not exist!`);
+    }
+
+    // Check if itineraryId is passed and verify its existence
+    if (itineraryId) {
+      const itinerary = await this.itineraries.getItineraryById(itineraryId);
+      if (!itinerary) {
+        throw new NotFoundError(`Itinerary ${itineraryId} does not exist!`);
+      }
+    }
+
+    // Handle image URLs updates (add/remove)
+    const urlList = [...(currPost.imageUrls || [])]; // Clone the current image URLs
+
+    if (addImageUrl) {
+      urlList.push(addImageUrl);
+    }
+
+    if (removeImageUrl) {
+      const index = urlList.indexOf(removeImageUrl);
+      if (index !== -1) {
+        urlList.splice(index, 1);
+      } else {
+        throw new NotAllowedError("Trying to remove a URL that doesn't exist");
+      }
+    }
+
+    // Prepare the update object, but only include fields that are defined
+    const updateData: Partial<PostDoc> = {};
+
+    if (title !== undefined) {
+      updateData.title = title;
+    }
+
+    if (tags !== undefined) {
+      updateData.tags = tags;
+    }
+
+    if (rating !== undefined) {
+      updateData.rating = rating;
+    }
+
+    if (itineraryId !== undefined) {
+      updateData.itineraryId = itineraryId;
+    }
+
+    // Only update imageUrls if they have changed
+    if (addImageUrl || removeImageUrl) {
+      updateData.imageUrls = urlList;
+    }
+
+    // Perform the partial update, only including fields that have changed
+    await this.posts.partialUpdateOne({ _id }, updateData);
+
     return { msg: "Post successfully updated!" };
   }
 
