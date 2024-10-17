@@ -30,6 +30,11 @@ const editPost = async () => {
   emit("editPost");
   emit("refreshPosts");
 };
+
+const handleRemoveImage = async (url: string) => {
+  removeImage.value = url;
+  await editPost();
+};
 </script>
 
 <template>
@@ -51,8 +56,16 @@ const editPost = async () => {
     <label for="addImage">Add Image URL:</label>
     <input id="addImage" v-model="addImage" placeholder="Add image URL" />
 
-    <label for="removeImage">Remove Image URL:</label>
-    <input id="removeImage" v-model="removeImage" placeholder="Remove image URL" />
+    <!-- List current image URLs with a remove button -->
+    <div>
+      <h4>Image URLs:</h4>
+      <ul>
+        <li v-for="url in props.post.imageUrls" :key="url">
+          {{ url }}
+          <button type="button" @click="handleRemoveImage(url)">Remove</button>
+        </li>
+      </ul>
+    </div>
 
     <div class="base">
       <menu>
