@@ -8,8 +8,8 @@ const title = ref(props.post.title);
 const tags = ref(props.post.tags);
 const rating = ref(props.post.rating);
 const itineraryId = ref(props.post.itineraryId);
-const imageUrls = ref<string[]>(props.post.imageUrls || []); // Change to array
-const newImageUrl = ref(""); // Temporary storage for new image URL input
+const addImage = ref(""); // Field for adding an image
+const removeImage = ref(""); // Field for removing an image
 const emit = defineEmits(["editPost", "refreshPosts"]);
 
 const editPost = async () => {
@@ -20,7 +20,8 @@ const editPost = async () => {
         tags: tags.value,
         rating: rating.value,
         itineraryId: itineraryId.value,
-        imageUrl: imageUrls.value[0] || "", // Send the first image URL
+        addImage: addImage.value ? addImage.value : "", // Only send if non-empty
+        removeImage: removeImage.value ? removeImage.value : "", // Only send if non-empty
       },
     });
   } catch (e) {
@@ -28,17 +29,6 @@ const editPost = async () => {
   }
   emit("editPost");
   emit("refreshPosts");
-};
-
-const addImageUrl = () => {
-  if (newImageUrl.value) {
-    imageUrls.value.push(newImageUrl.value); // Add new image URL to the array
-    newImageUrl.value = ""; // Clear the input
-  }
-};
-
-const removeImageUrl = (url: string) => {
-  imageUrls.value = imageUrls.value.filter((img) => img !== url); // Remove image URL
 };
 </script>
 
@@ -58,16 +48,11 @@ const removeImageUrl = (url: string) => {
     <label for="itineraryId">Itinerary Id:</label>
     <input id="itineraryId" v-model="itineraryId" placeholder="Itinerary Id" required />
 
-    <label for="newImageUrl">Image URL:</label>
-    <input id="newImageUrl" v-model="newImageUrl" placeholder="Add or update image URL" @keyup.enter="addImageUrl" />
-    <button type="button" @click="addImageUrl">Add Image</button>
+    <label for="addImage">Add Image URL:</label>
+    <input id="addImage" v-model="addImage" placeholder="Add image URL" />
 
-    <div>
-      <h4>Image URLs:</h4>
-      <ul>
-        <li v-for="url in imageUrls" :key="url">{{ url }} <button type="button" @click="removeImageUrl(url)">Remove</button></li>
-      </ul>
-    </div>
+    <label for="removeImage">Remove Image URL:</label>
+    <input id="removeImage" v-model="removeImage" placeholder="Remove image URL" />
 
     <div class="base">
       <menu>
