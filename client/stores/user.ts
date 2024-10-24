@@ -1,17 +1,18 @@
+import { fetchy } from "@/utils/fetchy";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-
-import { fetchy } from "@/utils/fetchy";
 
 export const useUserStore = defineStore(
   "user",
   () => {
     const currentUsername = ref("");
+    const favoritePosts = ref<string[]>([]); // Add state to track favorite posts
 
     const isLoggedIn = computed(() => currentUsername.value !== "");
 
     const resetStore = () => {
       currentUsername.value = "";
+      favoritePosts.value = []; // Reset favorite posts on logout
     };
 
     const createUser = async (username: string, password: string) => {
@@ -28,10 +29,12 @@ export const useUserStore = defineStore(
 
     const updateSession = async () => {
       try {
-        const { username } = await fetchy("/api/session", "GET", { alert: false });
+        const { username, favorites } = await fetchy("/api/session", "GET", { alert: false });
         currentUsername.value = username;
+        favoritePosts.value = favorites || []; // Set initial favorite posts from session data
       } catch {
         currentUsername.value = "";
+        favoritePosts.value = []; // Clear favorites if session update fails
       }
     };
 
@@ -53,9 +56,28 @@ export const useUserStore = defineStore(
       resetStore();
     };
 
+    const addFavorite = (postId: string | undefined) => {
+      if (postId) {
+        if (!favoritePosts.value.includes(postId)) {
+          favoritePosts.value.push(postId); // Add to favorites
+        }
+      }
+    };
+
+    const removeFavorite = (postId: string | undefined) => {
+      favoritePosts.value = favoritePosts.value.filter((id) => id !== postId); // Remove from favorites
+    };
+
+    const isPostFavorited = (postId: string | undefined) => {
+      if (postId) {
+        return favoritePosts.value.includes(postId); // Check if a post is favorited
+      }
+    };
+
     return {
       currentUsername,
       isLoggedIn,
+      favoritePosts,
       createUser,
       loginUser,
       updateSession,
@@ -63,6 +85,9 @@ export const useUserStore = defineStore(
       updateUserUsername,
       updateUserPassword,
       deleteUser,
+      addFavorite,
+      removeFavorite,
+      isPostFavorited,
     };
   },
   { persist: true },

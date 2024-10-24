@@ -1,26 +1,35 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { useUserStore } from "@/stores/user"; // Import the user store
+import { computed } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
 const props = defineProps({
   postId: String, // ID of the post
-  isFavorited: Boolean, // Whether the post is currently favorited
+  isFavorited: Boolean, // Initial favorite status passed from parent
 });
 
 const emit = defineEmits(["toggleFavorite"]);
 
-const isFavorited = ref(props.isFavorited);
+// Access the user store
+const userStore = useUserStore();
+
+// Compute the favorite status based on the store
+const isFavorited = computed(() => userStore.isPostFavorited(props.postId));
 
 const toggleFavorite = async () => {
   try {
-    const action = isFavorited.value ? "DELETE" : "POST"; // Toggle the favorite status
-    await fetchy(`/api/posts/${props.postId}/favorite`, action); // Send favorite/unfavorite request
+    const action = isFavorited.value ? "DELETE" : "POST"; // Determine action based on current status
+    await fetchy(`/api/posts/${props.postId}/favorite`, action); // Send request to favorite/unfavorite
 
-    // Toggle favorite status locally
-    isFavorited.value = !isFavorited.value;
+    // Update the user store based on the new status
+    if (isFavorited.value) {
+      userStore.removeFavorite(props.postId); // Remove from favorites in store
+    } else {
+      userStore.addFavorite(props.postId); // Add to favorites in store
+    }
 
     // Emit an event to notify the parent component of the change
-    emit("toggleFavorite", isFavorited.value);
+    emit("toggleFavorite", !isFavorited.value);
   } catch (error) {
     console.error("Failed to toggle favorite:", error);
   }
