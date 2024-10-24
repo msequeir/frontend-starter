@@ -2,6 +2,7 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
+import FavoriteView from "../views/FavoriteView.vue";
 import HomeView from "../views/HomeView.vue";
 import ItineraryView from "../views/ItineraryView.vue";
 import LoginView from "../views/LoginView.vue";
@@ -17,15 +18,20 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: "/itineraries",
+      name: "Itinerary",
+      component: ItineraryView,
+    },
+    {
+      path: "/favorites",
+      name: "Favorites",
+      component: FavoriteView,
+    },
+    {
       path: "/setting",
       name: "Settings",
       component: SettingView,
       meta: { requiresAuth: true },
-    },
-    {
-      path: "/itinerary",
-      name: "Itinerary",
-      component: ItineraryView,
     },
     {
       path: "/login",

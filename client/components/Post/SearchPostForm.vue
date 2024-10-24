@@ -12,6 +12,8 @@ const emit = defineEmits(["getPostsByAuthorAndTitle"]);
 function handleSubmit() {
   if (author.value || title.value) {
     emit("getPostsByAuthorAndTitle", author.value, title.value);
+  } else {
+    emit("getPostsByAuthorAndTitle");
   }
 }
 </script>

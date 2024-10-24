@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ItineraryListComponent from "@/components/Itinerary/ItineraryListComponent.vue";
+import FavoritePostListComponent from "@/components/Favorite/FavoritePostListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
@@ -13,7 +13,7 @@ const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
       <h1 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h1>
       <h1 v-else>Please login!</h1>
     </section>
-    <ItineraryListComponent />
+    <FavoritePostListComponent />
   </main>
 </template>
 

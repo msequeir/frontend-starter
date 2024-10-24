@@ -264,9 +264,9 @@ class Routes {
 
   // POSTING RELATED
   @Router.get("/itineraries")
-  @Router.validate(z.object({ author: z.string().optional(), title: z.string().optional() }))
+  @Router.validate(z.object({ author: z.string().optional() }))
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getItineraries(author?: string, title?: string) {
+  async getItineraries(author?: string) {
     if (author) {
       const id = (await Authing.getUserByUsername(author))._id; // TODO: Why is this bugging?
       return await Itinerary.getByAuthor(id);

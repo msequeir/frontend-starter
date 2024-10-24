@@ -31,7 +31,6 @@ async function getPosts(author?: string, title?: string) {
   let postResults;
   try {
     postResults = await fetchy("/api/posts", "GET", { query });
-    console.log("POSTS", postResults);
   } catch (_) {
     return;
   }
