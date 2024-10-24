@@ -3,40 +3,62 @@ import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
+import PostComponent from "../Post/PostComponent.vue";
 
-// Access the user store to check if the user is logged in
-storeToRefs(useUserStore());
+// Access the user store
+const { currentUsername } = storeToRefs(useUserStore());
 
-// Define reactive states for loading and managing posts, editing status, and search filters
+// Define the type for a post
+interface Post {
+  _id: string;
+  title: string;
+  author: string;
+  imageUrls: string[];
+  tags: string[];
+  rating: number;
+  itineraryId: string;
+  dateCreated: string;
+  dateUpdated: string;
+  isFavorited: boolean;
+}
+
+// Define reactive states for loading and managing posts
 const loaded = ref(false);
-let posts = ref<Array<Record<string, string>>>([]);
+const posts = ref<Post[]>([]);
 
+// Fetch the user's favorite posts
 async function getFavoritePosts() {
   try {
-    posts.value = await fetchy("/api/posts", "GET");
-  } catch (_) {
-    return;
+    const response = await fetchy("/api/favorites", "GET");
+    if (response.favorites) {
+      posts.value = response.favorites.reverse(); // Update with the favorites array
+    } else {
+      console.error(response.msg); // Log the message if no favorites
+    }
+  } catch (error) {
+    console.error("Failed to load favorite posts", error);
+  } finally {
+    loaded.value = true;
   }
 }
 
-// Fetch posts when the component is mounted
+// Fetch favorite posts when the component is mounted
 onBeforeMount(async () => {
   await getFavoritePosts();
-  loaded.value = true;
 });
 </script>
 
 <template>
-  <!-- Posts section displaying each post, with edit functionality -->
-  <section class="posts" v-if="loaded && posts.length !== 0">
+  <!-- Posts section displaying each favorite post -->
+  <section class="posts" v-if="loaded && posts.length > 0">
     <article v-for="post in posts" :key="post._id">
-      <!-- Conditionally show either PostComponent or EditPostForm based on editing state -->
-      <FavoritePostComponent />
+      <!-- Pass the post as a prop to the PostComponent -->
+      <PostComponent :post="post" />
     </article>
   </section>
 
-  <!-- No posts found message -->
-  <p v-else-if="loaded">No posts found</p>
+  <!-- No favorite posts found message -->
+  <p v-else-if="loaded">No favorite posts found</p>
 
   <!-- Loading state -->
   <p v-else>Loading...</p>

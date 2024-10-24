@@ -31,6 +31,9 @@ async function getPosts(author?: string, title?: string) {
   let postResults;
   try {
     postResults = await fetchy("/api/posts", "GET", { query });
+    if (author !== undefined || title !== undefined) {
+      postResults = postResults.reverse();
+    }
   } catch (_) {
     return;
   }
