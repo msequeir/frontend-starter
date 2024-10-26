@@ -38,8 +38,8 @@ const toggleFavorite = async () => {
 
 <template>
   <button @click="toggleFavorite" class="favorite-btn">
-    <span v-if="isFavorited">⭐</span>
-    <span v-else>☆</span>
+    <span v-if="isFavorited">❤️</span>
+    <span v-else>🤍</span>
   </button>
 </template>
 

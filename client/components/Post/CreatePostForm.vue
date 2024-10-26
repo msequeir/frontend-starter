@@ -4,10 +4,10 @@ import { fetchy } from "../../utils/fetchy";
 
 const title = ref("");
 const tags = ref("");
-const rating = ref(0);
+const rating = ref(0); // Rating as number
 const itineraryId = ref("");
-const imageUrls = ref<string[]>([]); // Change to array
-const newImageUrl = ref(""); // Temporary storage for new image URL input
+const imageUrls = ref<string[]>([]);
+const newImageUrl = ref("");
 const emit = defineEmits(["refreshPosts"]);
 
 const createPost = async () => {
@@ -19,7 +19,7 @@ const createPost = async () => {
         tags: tags.value,
         rating: rating.value,
         itineraryId: itineraryId.value,
-        imageUrl: imageUrls.value[0], // Send the first URL need to add with edit as in be
+        imageUrl: imageUrls.value[0],
       },
     });
   } catch (_) {
@@ -31,13 +31,13 @@ const createPost = async () => {
 
 const addImageUrl = () => {
   if (newImageUrl.value) {
-    imageUrls.value.push(newImageUrl.value); // Add new image URL to the array
-    newImageUrl.value = ""; // Clear the input
+    imageUrls.value.push(newImageUrl.value);
+    newImageUrl.value = "";
   }
 };
 
 const removeImageUrl = (url: string) => {
-  imageUrls.value = imageUrls.value.filter((img) => img !== url); // Remove image URL
+  imageUrls.value = imageUrls.value.filter((img) => img !== url);
 };
 
 const emptyForm = () => {
@@ -45,7 +45,12 @@ const emptyForm = () => {
   tags.value = "";
   rating.value = 0;
   itineraryId.value = "";
-  imageUrls.value = []; // Reset to empty array
+  imageUrls.value = [];
+};
+
+// Function to set rating based on the star clicked
+const setRating = (stars: number) => {
+  rating.value = stars;
 };
 </script>
 
@@ -57,20 +62,27 @@ const emptyForm = () => {
     <label for="tags">Tags:</label>
     <input id="tags" v-model="tags" placeholder="Tags (comma-separated)" />
 
-    <label for="rating">Rating (0-5):</label>
-    <input id="rating" type="number" v-model="rating" min="0" max="5" required />
+    <label for="rating">Rating:</label>
+    <div class="star-rating">
+      <span v-for="star in 5" :key="star" @click="setRating(star)" class="star">
+        {{ star <= rating ? "★" : "☆" }}
+      </span>
+    </div>
 
     <label for="itineraryId">Itinerary Id:</label>
     <input id="itineraryId" v-model="itineraryId" placeholder="Itinerary Id" required />
 
     <label for="newImageUrl">Image URL:</label>
-    <input id="newImageUrl" v-model="newImageUrl" placeholder="Add Image URL" @keyup.enter="addImageUrl" />
+    <input id="newImageUrl" v-model="newImageUrl" placeholder="Add only 1 image URL" @keyup.enter="addImageUrl" />
     <button type="button" @click="addImageUrl">Add Image</button>
 
     <div>
       <h4>Image URLs:</h4>
       <ul>
-        <li v-for="url in imageUrls" :key="url">{{ url }} <button type="button" @click="removeImageUrl(url)">Remove</button></li>
+        <li v-for="url in imageUrls" :key="url">
+          {{ url }}
+          <button type="button" @click="removeImageUrl(url)">Remove</button>
+        </li>
       </ul>
     </div>
 
@@ -80,20 +92,89 @@ const emptyForm = () => {
 
 <style scoped>
 form {
-  background-color: var(--base-bg);
+  background-color: #f9f9f9; /* Light background for contrast */
   border-radius: 1em;
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
-  padding: 1em;
+  gap: 1em; /* Increased gap for better spacing */
+  padding: 2em; /* More padding for a spacious feel */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  font-family: "Poppins", sans-serif; /* Set the preferred font */
 }
 
-textarea {
-  font-family: inherit;
-  font-size: inherit;
-  height: 6em;
-  padding: 0.5em;
-  border-radius: 4px;
-  resize: none;
+h4 {
+  margin-top: 1em; /* Margin for the heading */
+  color: #264653; /* Darker teal for headings */
+  font-family: "Poppins", sans-serif; /* Set the preferred font */
+}
+
+label {
+  font-weight: bold; /* Bold labels for clarity */
+  color: #264653; /* Darker teal for labels */
+  font-family: "Poppins", sans-serif; /* Set the preferred font */
+}
+
+input {
+  padding: 0.8em; /* Padding for input fields */
+  border: 1px solid #e0e0e0; /* Light border for inputs */
+  border-radius: 0.5em; /* Rounded corners for inputs */
+  font-size: 1em; /* Consistent font size */
+  width: 100%; /* Full width for inputs */
+  font-family: "Poppins", sans-serif; /* Set the preferred font */
+}
+
+input::placeholder {
+  color: #b0b0b0; /* Light gray for placeholder text */
+}
+
+.star-rating {
+  display: inline-flex;
+  font-size: 2em; /* Larger stars for visibility */
+  cursor: pointer;
+}
+
+.star {
+  color: gold;
+}
+
+.star:hover,
+.star-rating:hover .star {
+  color: orange; /* Hover effect for stars */
+}
+
+button {
+  padding: 0.8em 1.5em; /* Padding for buttons */
+  background-color: #2a9d8f; /* Primary button color */
+  color: white; /* Text color */
+  border: none; /* No border */
+  border-radius: 0.5em; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition for background color */
+  font-family: "Poppins", sans-serif; /* Set the preferred font */
+}
+
+button:hover {
+  background-color: #264653; /* Darker color on hover */
+}
+
+ul {
+  list-style-type: none; /* No bullet points for list */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+}
+
+li {
+  display: flex; /* Flexbox for list items */
+  justify-content: space-between; /* Space between text and button */
+  align-items: center; /* Center alignment */
+  padding: 0.5em 0; /* Padding for list items */
+}
+
+li button {
+  background-color: #e76f51; /* Red color for remove buttons */
+}
+
+li button:hover {
+  background-color: #c56d4f; /* Darker red on hover */
 }
 </style>

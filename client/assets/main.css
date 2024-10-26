@@ -3,30 +3,83 @@
 :root {
   --red: rgb(208, 67, 12);
   --base-bg: #f1f3f5;
+  --primary-color: #2a9d8f; /* Primary teal color for buttons */
+  --secondary-color: #264653; /* Darker teal for accents */
+  --text-color: #212529; /* Dark gray for text */
+  --border-color: #dee2e6; /* Light gray for borders */
 }
 
+body {
+  margin: 0; /* Remove default margin */
+  font-family: 'Arial', sans-serif; /* Set a clean font */
+  background-color: var(--base-bg); /* Background color */
+  color: var(--text-color); /* Text color */
+  line-height: 1.6; /* Improved line height for readability */
+}
+
+button {
+  padding: 0.5em 1em; /* Default button padding */
+  border: none; /* Remove border */
+  border-radius: 0.25em; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor for buttons */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+}
+
+/* Small button style */
 button.btn-small {
   font-size: 80%;
+  padding: 0.25em 0.5em; /* Smaller padding for small buttons */
 }
 
+/* Error button style */
 button.button-error {
   color: white;
   background: var(--red);
+  border: none; /* No border for error button */
 }
 
+button.button-error:hover {
+  background: darkred; /* Darker shade on hover */
+}
+
+/* Button link styles */
 a.button {
-  color: #212529;
-  background-color: #f1f3f5;
-  border: 1px solid #dee2e6;
-  border-radius: 0.25em;
-  padding: 0.375em 0.75em;
-  text-decoration: none;
+  display: inline-block; /* Ensure buttons are block elements */
+  color: var(--text-color); /* Text color */
+  background-color: var(--base-bg); /* Background color */
+  border: 1px solid var(--border-color); /* Border color */
+  border-radius: 0.25em; /* Rounded corners */
+  padding: 0.375em 0.75em; /* Padding */
+  text-decoration: none; /* No underline */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
 }
 
+a.button:hover {
+  background-color: var(--primary-color); /* Change to primary color on hover */
+  color: white; /* Change text color on hover */
+}
+
+/* Column layout */
 .column {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1em;
+  gap: 1em; /* Spacing between items */
+  padding: 1em; /* Padding around the column */
+}
+
+/* Add media query for responsiveness */
+@media (max-width: 768px) {
+  button {
+    width: 100%; /* Full width for buttons on smaller screens */
+  }
+
+  a.button {
+    width: 100%; /* Full width for button links on smaller screens */
+  }
+
+  .column {
+    padding: 0.5em; /* Reduced padding on smaller screens */
+  }
 }

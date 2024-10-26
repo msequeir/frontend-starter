@@ -19,7 +19,6 @@ const deletePost = async () => {
   emit("refreshPosts");
 };
 
-// Update the favorite state in the parent component
 const handleToggleFavorite = (newStatus: boolean) => {
   console.log(`Favorite status changed to: ${newStatus}`);
 };
@@ -28,7 +27,7 @@ const handleToggleFavorite = (newStatus: boolean) => {
 <template>
   <p class="title">{{ props.post.title }}</p>
 
-  <!-- Display image URLs as images-->
+  <!-- Image Display -->
   <div v-if="props.post.imageUrls && props.post.imageUrls.length > 0" class="post-images">
     <div v-for="(url, index) in props.post.imageUrls" :key="index" class="image-container">
       <img :src="url" alt="Post image" class="post-image" />
@@ -37,22 +36,24 @@ const handleToggleFavorite = (newStatus: boolean) => {
 
   <div class="post-header">
     <p class="author">{{ props.post.author }}</p>
-
-    <!-- Favorite and Upvote button components -->
     <FavoriteButton class="favorite-btn" :postId="props.post._id" :isFavorited="props.post.isFavorited" @toggleFavorite="handleToggleFavorite" />
     <UpvoteButton :postId="props.post._id" />
-    <!-- Add UpvoteButton component -->
   </div>
 
   <p class="tags">Tags: {{ props.post.tags }}</p>
-  <p class="rating">Rating: {{ props.post.rating }}</p>
-  <p class="itineraryId">{{ props.post.itineraryId }}</p>
+
+  <!-- Star-based Rating -->
+  <div class="rating">
+    <span v-for="i in 5" :key="i" class="star" :class="{ filled: i <= props.post.rating }">★</span>
+  </div>
+
+  <p class="itineraryId">Itinerary:</p>
+  <div>{{ props.post.itinerary.content }}</div>
 
   <div class="base">
     <menu v-if="props.post.author == currentUsername">
       <li>
         <button class="btn-small pure-button" @click="emit('editPost', props.post._id)">
-          <!-- Pencil SVG icon -->
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 16 16">
             <rect width="1.997" height="5.657" x="10.472" y="1.701" fill="#8852ff" transform="rotate(-45.001 11.47 4.53)"></rect>
             <polygon fill="#ffa62e" points="12.824,7.176 8.824,3.176 1,11 1,15 5,15"></polygon>
@@ -79,17 +80,21 @@ const handleToggleFavorite = (newStatus: boolean) => {
 
 <style scoped>
 p {
-  margin: 0em;
+  margin: 0;
+  font-family: "Poppins", sans-serif; /* Set Poppins font for paragraphs */
 }
 
 .title {
   font-weight: bolder;
-  font-size: 1.2em;
+  font-size: 1.5em; /* Slightly larger font size for titles */
   text-align: center;
+  color: #333; /* Dark text for contrast */
 }
+
 .author {
   font-weight: bold;
   font-size: 1.2em;
+  color: #555; /* Slightly lighter than the title */
 }
 
 .post-images {
@@ -109,6 +114,7 @@ p {
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
+  border: 2px solid #6fc5d6; /* Border to match the theme */
 }
 
 .post-header {
@@ -123,7 +129,22 @@ p {
   border: none;
   cursor: pointer;
   font-size: 1.2em;
-  margin-right: 0em; /* Adjust this to bring the button closer to the author */
+  margin-right: 0;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
+  font-size: 1.5em;
+}
+
+.star {
+  color: #d3d3d3; /* Default star color */
+}
+
+.star.filled {
+  color: #ffc107; /* Color for filled stars */
 }
 
 menu {
@@ -140,15 +161,16 @@ menu {
   justify-content: flex-end;
   font-size: 0.9em;
   font-style: italic;
+  color: #888; /* Lighter text for timestamp */
 }
 
 .base {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.base article:only-child {
-  margin-left: auto;
+  background-color: #e0f7f1; /* Light mint green background for the base section */
+  padding: 10px; /* Add padding for space */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 </style>

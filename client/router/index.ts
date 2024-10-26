@@ -2,6 +2,7 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
+import CreatePostView from "../views/CreatePostView.vue";
 import FavoriteView from "../views/FavoriteView.vue";
 import HomeView from "../views/HomeView.vue";
 import ItineraryView from "../views/ItineraryView.vue";
@@ -26,6 +27,11 @@ const router = createRouter({
       path: "/favorites",
       name: "Favorites",
       component: FavoriteView,
+    },
+    {
+      path: "/create-post",
+      name: "CreatePost",
+      component: CreatePostView,
     },
     {
       path: "/setting",

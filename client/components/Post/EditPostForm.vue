@@ -35,6 +35,11 @@ const handleRemoveImage = async (url: string) => {
   removeImage.value = url;
   await editPost();
 };
+
+// Function to set rating based on the star clicked
+const setRating = (stars: number) => {
+  rating.value = stars;
+};
 </script>
 
 <template>
@@ -47,8 +52,12 @@ const handleRemoveImage = async (url: string) => {
     <label for="tags">Tags:</label>
     <input id="tags" v-model="tags" placeholder="Tags (comma-separated)" />
 
-    <label for="rating">Rating (0-5):</label>
-    <input id="rating" type="number" v-model="rating" min="0" max="5" required />
+    <div class="star-rating">
+      <!-- Loop for each star, displaying filled or empty based on selected rating -->
+      <span v-for="star in 5" :key="star" @click="setRating(star)" class="star">
+        {{ star <= rating ? "★" : "☆" }}
+      </span>
+    </div>
 
     <label for="itineraryId">Itinerary Id:</label>
     <input id="itineraryId" v-model="itineraryId" placeholder="Itinerary Id" required />
@@ -123,5 +132,20 @@ menu {
   justify-content: flex-end;
   font-size: 0.9em;
   font-style: italic;
+}
+
+.star-rating {
+  display: inline-flex;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.star {
+  color: gold;
+}
+
+.star:hover,
+.star-rating:hover .star {
+  color: orange;
 }
 </style>

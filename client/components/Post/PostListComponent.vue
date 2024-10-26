@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CreatePostForm from "@/components/Post/CreatePostForm.vue";
 import EditPostForm from "@/components/Post/EditPostForm.vue";
 import PostComponent from "@/components/Post/PostComponent.vue";
 import { useUserStore } from "@/stores/user";
@@ -34,6 +33,7 @@ async function getPosts(author?: string, title?: string) {
     if (author !== undefined || title !== undefined) {
       postResults = postResults.reverse();
     }
+    console.log(postResults);
   } catch (_) {
     return;
   }
@@ -55,12 +55,6 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <!-- Section to create a post, only visible if the user is logged in -->
-  <section v-if="isLoggedIn">
-    <h2>Create a post:</h2>
-    <CreatePostForm @refreshPosts="getPosts" />
-  </section>
-
   <!-- Search bar and header -->
   <div class="row">
     <h2 v-if="!searchAuthor && !searchTitle">Posts:</h2>
@@ -80,17 +74,39 @@ onBeforeMount(async () => {
   </section>
 
   <!-- No posts found message -->
-  <p v-else-if="loaded">No posts found</p>
+  <p v-else-if="loaded" class="no-posts">No posts found</p>
 
   <!-- Loading state -->
   <p v-else>Loading...</p>
 </template>
 
 <style scoped>
+body {
+  background-image: url("https://your-image-url.com/background.jpg"); /* Replace with a relaxing travel-themed background image */
+  background-size: cover;
+  background-position: center;
+  color: #4a4a4a; /* Soft text color */
+}
+
 section {
   display: flex;
   flex-direction: column;
   gap: 1em;
+  padding: 20px; /* Add padding for spacing */
+  background: rgba(255, 255, 255, 0.8); /* Light translucent background for readability */
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+}
+
+h2 {
+  color: #2c3e50; /* Darker color for headers */
+  font-family: "Poppins", sans-serif; /* Use Poppins font for headers */
+}
+
+.no-posts {
+  font-family: "Poppins", sans-serif; /* Consistent font for no posts message */
+  color: #555; /* Color for no posts message */
+  text-align: center; /* Center the message */
 }
 
 section,
@@ -101,12 +117,17 @@ p,
 }
 
 article {
-  background-color: var(--base-bg);
+  background-color: #ffffff; /* White background for individual posts */
   border-radius: 1em;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
   padding: 1em;
+  transition: transform 0.2s; /* Smooth transition for hover effect */
+}
+
+article:hover {
+  transform: scale(1.02); /* Slight scaling effect on hover */
 }
 
 .posts {

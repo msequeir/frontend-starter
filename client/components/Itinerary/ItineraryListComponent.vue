@@ -29,8 +29,6 @@ async function getItineraries(author?: string) {
   } catch (_) {
     return;
   }
-  console.log(useUserStore());
-  console.log(itineraryResults);
   searchAuthor.value = author ? author : "";
   itineraries.value = itineraryResults;
 }
@@ -49,15 +47,15 @@ onBeforeMount(async () => {
 
 <template>
   <!-- Section to create an itinerary, only visible if the user is logged in -->
-  <section v-if="isLoggedIn">
-    <h2>Create an Itinerary:</h2>
+  <section v-if="isLoggedIn" class="create-itinerary">
+    <h2 class="section-header">Create an Itinerary:</h2>
     <CreateItineraryForm @refreshItineraries="getItineraries" />
   </section>
 
   <!-- Search bar and header -->
   <div class="row">
-    <h2 v-if="!searchAuthor">Itineraries:</h2>
-    <h2 v-else>Itineraries by {{ searchAuthor }}:</h2>
+    <h2 v-if="!searchAuthor" class="header-title">Itineraries:</h2>
+    <h2 v-else class="header-title">Itineraries by {{ searchAuthor }}:</h2>
     <SearchItineraryForm @getItineraryByAuthor="getItineraries" />
   </div>
 
@@ -71,24 +69,46 @@ onBeforeMount(async () => {
   </section>
 
   <!-- No itineraries found message -->
-  <p v-else-if="loaded">No itineraries found</p>
+  <p v-else-if="loaded" class="no-itineraries">No itineraries found</p>
 
   <!-- Loading state -->
-  <p v-else>Loading...</p>
+  <p v-else class="loading">Loading...</p>
 </template>
 
 <style scoped>
 section {
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 1.5em;
 }
 
 section,
 p,
 .row {
   margin: 0 auto;
-  max-width: 60em;
+  max-width: 80em; /* Increased width for better use of space */
+  padding: 1em; /* Padding for better spacing */
+}
+
+.create-itinerary {
+  width: 100%; /* Take full width */
+  background-color: #f0f8ff; /* Light background color for distinction */
+  border-radius: 0.5em; /* Rounded corners */
+  padding: 2em; /* More padding for emphasis */
+  margin-bottom: 2em; /* Space below this section */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+.header-title {
+  color: #264653; /* Color to match your theme */
+  font-size: 1.5em; /* Larger font size for headers */
+  margin-bottom: 0.5em; /* Spacing below the header */
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Center align items vertically */
 }
 
 article {
@@ -96,18 +116,19 @@ article {
   border-radius: 1em;
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
-  padding: 1em;
+  gap: 1em; /* Increased gap for better spacing */
+  padding: 1.5em; /* More padding for better content visibility */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
 
 .itineraries {
-  padding: 1em;
+  padding: 1em 0; /* Vertical padding for the itineraries section */
 }
 
-.row {
-  display: flex;
-  justify-content: space-between;
-  margin: 0 auto;
-  max-width: 60em;
+.no-itineraries,
+.loading {
+  text-align: center; /* Center the text */
+  font-size: 1.2em; /* Larger font size for better visibility */
+  color: #e76f51; /* Accent color for messages */
 }
 </style>
