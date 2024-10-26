@@ -4,6 +4,7 @@ import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
 import { fetchy } from "../../utils/fetchy";
 import FavoriteButton from "../Favorite/FavoriteButton.vue";
+import UpvoteButton from "../Upvoting/UpvoteButton.vue";
 
 const props = defineProps(["post"]);
 const emit = defineEmits(["editPost", "refreshPosts"]);
@@ -17,15 +18,16 @@ const deletePost = async () => {
   }
   emit("refreshPosts");
 };
+
 // Update the favorite state in the parent component
 const handleToggleFavorite = (newStatus: boolean) => {
-  // Directly update the post's favorite status
   console.log(`Favorite status changed to: ${newStatus}`);
 };
 </script>
 
 <template>
   <p class="title">{{ props.post.title }}</p>
+
   <!-- Display image URLs as images-->
   <div v-if="props.post.imageUrls && props.post.imageUrls.length > 0" class="post-images">
     <div v-for="(url, index) in props.post.imageUrls" :key="index" class="image-container">
@@ -35,13 +37,17 @@ const handleToggleFavorite = (newStatus: boolean) => {
 
   <div class="post-header">
     <p class="author">{{ props.post.author }}</p>
-    <!-- Favorite button component with a specific class -->
+
+    <!-- Favorite and Upvote button components -->
     <FavoriteButton class="favorite-btn" :postId="props.post._id" :isFavorited="props.post.isFavorited" @toggleFavorite="handleToggleFavorite" />
+    <UpvoteButton :postId="props.post._id" />
+    <!-- Add UpvoteButton component -->
   </div>
 
   <p class="tags">Tags: {{ props.post.tags }}</p>
   <p class="rating">Rating: {{ props.post.rating }}</p>
   <p class="itineraryId">{{ props.post.itineraryId }}</p>
+
   <div class="base">
     <menu v-if="props.post.author == currentUsername">
       <li>
@@ -117,7 +123,7 @@ p {
   border: none;
   cursor: pointer;
   font-size: 1.2em;
-  margin-right: 11em; /* Adjust this to bring the button closer to the author */
+  margin-right: 0em; /* Adjust this to bring the button closer to the author */
 }
 
 menu {
