@@ -29,6 +29,8 @@ async function getItineraries(author?: string) {
   } catch (_) {
     return;
   }
+  console.log(useUserStore());
+  console.log(itineraryResults);
   searchAuthor.value = author ? author : "";
   itineraries.value = itineraryResults;
 }

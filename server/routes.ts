@@ -101,7 +101,8 @@ class Routes {
   async createPost(session: SessionDoc, title: string, tags: string, rating: number, itineraryId: string, imageUrl: string) {
     const user = Sessioning.getUser(session);
     const iid = new ObjectId(itineraryId);
-    await Itinerary.assertAuthorIsAllowedToEdit(iid, user);
+    const username = (await Authing.getUserById(user)).username;
+    await Itinerary.assertAuthorIsAllowedToEdit(iid, user, username);
 
     const created = await Posting.create(user, title, tags, rating, iid, imageUrl);
     return { msg: created.msg, post: await Responses.post(created.post) };
@@ -116,7 +117,8 @@ class Routes {
     if (itineraryId) {
       iid = new ObjectId(itineraryId);
       // Check if the itinerary exists and belongs to the user
-      await Itinerary.assertAuthorIsAllowedToEdit(iid, user);
+      const username = (await Authing.getUserById(user)).username;
+      await Itinerary.assertAuthorIsAllowedToEdit(iid, user, username);
     }
 
     await Posting.assertAuthorIsUser(oid, user);
@@ -234,14 +236,9 @@ class Routes {
   async updateItinerary(session: SessionDoc, id: string, collaboratorId?: string, content?: string) {
     const user = Sessioning.getUser(session);
     const itineraryOid = new ObjectId(id);
-
-    let collaboratorOid;
-    if (collaboratorId) {
-      collaboratorOid = new ObjectId(collaboratorId);
-    }
-
-    await Itinerary.assertAuthorIsAllowedToEdit(itineraryOid, user); // Ensure the user is the owner
-    return await Itinerary.updateItinerary(itineraryOid, collaboratorOid, content);
+    const username = (await Authing.getUserById(user)).username;
+    await Itinerary.assertAuthorIsAllowedToEdit(itineraryOid, user, username); // Ensure the user is the owner
+    return await Itinerary.updateItinerary(itineraryOid, collaboratorId, content);
   }
 
   @Router.delete("/itineraries/:id")
@@ -249,7 +246,8 @@ class Routes {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
 
-    await Itinerary.assertAuthorIsAllowedToEdit(oid, user); // Ensure the user is the owner
+    const username = (await Authing.getUserById(user)).username;
+    await Itinerary.assertAuthorIsAllowedToEdit(oid, user, username); // Ensure the user is the owner
     return Itinerary.deleteItinerary(oid);
   }
 

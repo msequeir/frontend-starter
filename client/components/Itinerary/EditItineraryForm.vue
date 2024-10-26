@@ -6,18 +6,34 @@ import { formatDate } from "../../utils/formatDate";
 const props = defineProps(["itinerary"]);
 const content = ref(props.itinerary.content);
 
+// Field for adding a collaborator username or ID
+const newCollaborator = ref("");
+
+// Holds the current collaborators (copying from props)
+const collaborators = ref([...props.itinerary.collaborators]);
+
 const emit = defineEmits(["editItinerary", "refreshItineraries"]);
 
 const editItinerary = async () => {
   try {
+    // Send updated content and collaborators to backend
     await fetchy(`/api/itineraries/${props.itinerary._id}`, "PATCH", {
       body: {
         content: content.value,
+        collaboratorId: newCollaborator.value ? newCollaborator.value : null, // Only send if not empty
       },
     });
+
+    // If a new collaborator was added, push it to the local list
+    if (newCollaborator.value) {
+      collaborators.value.push(newCollaborator.value);
+      newCollaborator.value = ""; // Clear input after successful addition
+    }
   } catch (e) {
+    console.error("Failed to update itinerary:", e);
     return;
   }
+
   emit("editItinerary");
   emit("refreshItineraries");
 };
@@ -27,6 +43,19 @@ const editItinerary = async () => {
   <form @submit.prevent="editItinerary()">
     <p class="author">{{ props.itinerary.author }}</p>
     Itinerary Id: {{ props.itinerary._id }}
+
+    <label for="newCollaborator">Add Collaborator (ID or Username):</label>
+    <input id="newCollaborator" v-model="newCollaborator" placeholder="CollaboratorId or Username" />
+
+    <!-- List current collaborators -->
+    <div>
+      <h4>Collaborators:</h4>
+      <ul>
+        <li v-for="collaborator in collaborators" :key="collaborator">
+          {{ collaborator }}
+        </li>
+      </ul>
+    </div>
 
     <label for="content">Content:</label>
     <textarea id="content" v-model="content" placeholder="Content" required></textarea>

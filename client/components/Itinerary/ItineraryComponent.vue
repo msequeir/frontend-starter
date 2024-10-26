@@ -21,7 +21,7 @@ const deleteItinerary = async () => {
 <template>
   <p class="itinerary">{{ props.itinerary.content }}</p>
   <div class="base">
-    <menu v-if="props.itinerary.author == currentUsername">
+    <menu v-if="props.itinerary.author == currentUsername || props.itinerary.collaborators.includes(currentUsername)">
       <li><button class="btn-small pure-button" @click="emit('editItinerary', props.itinerary._id)">Edit</button></li>
       <li><button class="button-error btn-small pure-button" @click="deleteItinerary">Delete</button></li>
     </menu>

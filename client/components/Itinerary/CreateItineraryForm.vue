@@ -3,6 +3,8 @@ import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
 const content = ref("");
+const collaborators = ref<string[]>([]); // Change to array
+
 const emit = defineEmits(["refreshItineraries"]);
 
 const createItinerary = async () => {
@@ -11,6 +13,7 @@ const createItinerary = async () => {
     await fetchy("/api/itineraries", "POST", {
       body: {
         content: content.value,
+        collaborators: collaborators.value[0], // Send the first URL need to add with edit as in be
       },
     });
   } catch (_) {

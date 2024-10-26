@@ -4,7 +4,7 @@ import { NotAllowedError, NotFoundError } from "./errors";
 
 export interface ItineraryDoc extends BaseDoc {
   author: ObjectId; // Original creator
-  collaborators: ObjectId[]; // Other editors
+  collaborators: string[]; // Other editors as usernames
   content: string;
 }
 
@@ -66,26 +66,26 @@ export default class ItineraryConcept {
   /**
    * Updates an itinerary.
    * @param itineraryId - The ID of the itinerary to update.
-   * @param collaboratorId - The ID of the collaborator to add (optional).
+   * @param collaboratorUsername - The username of the collaborator to add (optional).
    * @param content - The new content of the itinerary (optional).
    * @returns The updated itinerary.
    */
-  async updateItinerary(itineraryId: ObjectId, collaboratorId?: ObjectId, content?: string) {
-    if (!collaboratorId && !content) {
-      throw new Error("At least one field (collaboratorId or content) must be provided to update.");
+  async updateItinerary(itineraryId: ObjectId, collaboratorUsername?: string, content?: string) {
+    if (!collaboratorUsername && !content) {
+      throw new Error("At least one field (collaboratorUsername or content) must be provided to update.");
     }
 
     const updatedData: Partial<ItineraryDoc> = {};
 
     const itinerary = await this.getItineraryById(itineraryId);
 
-    // Ensure collaborators is always an array
+    // Ensure collaborators is always an array of usernames
     itinerary.collaborators = Array.isArray(itinerary.collaborators) ? itinerary.collaborators : [];
 
     if (content) updatedData.content = content;
 
-    if (collaboratorId && !itinerary.collaborators.includes(collaboratorId)) {
-      itinerary.collaborators.push(collaboratorId); // Add new collaborator only if not already present
+    if (collaboratorUsername && !itinerary.collaborators.includes(collaboratorUsername)) {
+      itinerary.collaborators.push(collaboratorUsername); // Add new collaborator only if not already present
       updatedData.collaborators = itinerary.collaborators;
     }
 
@@ -107,16 +107,16 @@ export default class ItineraryConcept {
    * Checks if the user is allowed to edit the itinerary.
    * @param itineraryId - The ID of the itinerary.
    * @param user - The user ID.
+   * @param username - The username of the user.
    * @throws ItineraryAuthorNotMatchError if the user is not the author or a collaborator.
    */
-  async assertAuthorIsAllowedToEdit(itineraryId: ObjectId, user: ObjectId) {
+  async assertAuthorIsAllowedToEdit(itineraryId: ObjectId, user: ObjectId, username: string) {
     const itinerary = await this.getItineraryById(itineraryId);
+
+    // Check if the author matches the user ObjectId
     if (itinerary.author.toString() !== user.toString()) {
-      let seen = false;
-      for (const collab of itinerary.collaborators) {
-        if (itineraryId.toString() == collab.toString()) seen = true;
-      }
-      if (!seen) {
+      // Check if the username is in the collaborators array
+      if (!itinerary.collaborators.includes(username)) {
         throw new ItineraryAuthorNotMatchError(user, itineraryId);
       }
     }
