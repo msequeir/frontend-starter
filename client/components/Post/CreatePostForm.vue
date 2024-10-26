@@ -6,9 +6,10 @@ const title = ref("");
 const tags = ref("");
 const rating = ref(0); // Rating as number
 const itineraryId = ref("");
-const imageUrls = ref<string[]>([]);
+const imageUrls = ref<string[]>([]); // Keep the array for image URLs
 const newImageUrl = ref("");
 const emit = defineEmits(["refreshPosts"]);
+const showMessage = ref(false); // To control the visibility of the message
 
 const createPost = async () => {
   try {
@@ -19,7 +20,7 @@ const createPost = async () => {
         tags: tags.value,
         rating: rating.value,
         itineraryId: itineraryId.value,
-        imageUrl: imageUrls.value[0],
+        imageUrl: imageUrls.value[0], // Use the first image URL in the array
       },
     });
   } catch (_) {
@@ -30,14 +31,20 @@ const createPost = async () => {
 };
 
 const addImageUrl = () => {
-  if (newImageUrl.value) {
+  // Allow adding an image URL only if the array is empty
+  if (newImageUrl.value && imageUrls.value.length === 0) {
     imageUrls.value.push(newImageUrl.value);
     newImageUrl.value = "";
+    showMessage.value = false; // Hide the message if an image is added
+  } else if (imageUrls.value.length > 0) {
+    showMessage.value = true; // Show the message if trying to add another image
   }
 };
 
 const removeImageUrl = (url: string) => {
   imageUrls.value = imageUrls.value.filter((img) => img !== url);
+  // Hide the message when the image is removed
+  showMessage.value = false;
 };
 
 const emptyForm = () => {
@@ -45,7 +52,8 @@ const emptyForm = () => {
   tags.value = "";
   rating.value = 0;
   itineraryId.value = "";
-  imageUrls.value = [];
+  imageUrls.value = []; // Reset the image URLs array
+  showMessage.value = false; // Reset the message visibility
 };
 
 // Function to set rating based on the star clicked
@@ -74,7 +82,10 @@ const setRating = (stars: number) => {
 
     <label for="newImageUrl">Image URL:</label>
     <input id="newImageUrl" v-model="newImageUrl" placeholder="Add only 1 image URL" @keyup.enter="addImageUrl" />
-    <button type="button" @click="addImageUrl">Add Image</button>
+    <button type="button" @click="addImageUrl" :disabled="imageUrls.length > 0">Add Image</button>
+
+    <!-- Show message only when trying to add an additional image -->
+    <p v-if="showMessage" style="color: red">You can only start with one image URL.</p>
 
     <div>
       <h4>Image URLs:</h4>

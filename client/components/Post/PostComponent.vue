@@ -2,6 +2,7 @@
 import { useUserStore } from "@/stores/user";
 import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
+import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 import FavoriteButton from "../Favorite/FavoriteButton.vue";
 import UpvoteButton from "../Upvoting/UpvoteButton.vue";
@@ -9,6 +10,8 @@ import UpvoteButton from "../Upvoting/UpvoteButton.vue";
 const props = defineProps(["post"]);
 const emit = defineEmits(["editPost", "refreshPosts"]);
 const { currentUsername } = storeToRefs(useUserStore());
+
+const currentImageIndex = ref(0); // Track the current image index
 
 const deletePost = async () => {
   try {
@@ -22,6 +25,12 @@ const deletePost = async () => {
 const handleToggleFavorite = (newStatus: boolean) => {
   console.log(`Favorite status changed to: ${newStatus}`);
 };
+
+// Function to change the current image index
+const changeImage = (direction: number) => {
+  const totalImages = props.post.imageUrls.length;
+  currentImageIndex.value = (currentImageIndex.value + direction + totalImages) % totalImages;
+};
 </script>
 
 <template>
@@ -29,9 +38,13 @@ const handleToggleFavorite = (newStatus: boolean) => {
 
   <!-- Image Display -->
   <div v-if="props.post.imageUrls && props.post.imageUrls.length > 0" class="post-images">
-    <div v-for="(url, index) in props.post.imageUrls" :key="index" class="image-container">
-      <img :src="url" alt="Post image" class="post-image" />
+    <button class="arrow left-arrow" @click="changeImage(-1)">&#9664;</button>
+
+    <div class="image-container">
+      <img :src="props.post.imageUrls[currentImageIndex]" alt="Post image" class="post-image" />
     </div>
+
+    <button class="arrow right-arrow" @click="changeImage(1)">&#9654;</button>
   </div>
 
   <div class="post-header">
@@ -99,14 +112,14 @@ p {
 
 .post-images {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1em;
-  justify-content: center;
+  align-items: center; /* Center images vertically */
+  justify-content: center; /* Center images horizontally */
+  position: relative; /* Position for arrow buttons */
 }
 
 .image-container {
-  width: 500px;
-  height: 500px;
+  width: 500px; /* Fixed width for the image container */
+  height: 500px; /* Fixed height for the image container */
 }
 
 .post-image {
@@ -115,6 +128,18 @@ p {
   object-fit: cover;
   border-radius: 8px;
   border: 2px solid #6fc5d6; /* Border to match the theme */
+}
+
+.arrow {
+  background: none;
+  border: none;
+  font-size: 2em; /* Larger font size for arrows */
+  cursor: pointer;
+  color: #333; /* Arrow color */
+}
+
+.arrow:hover {
+  color: #6fc5d6; /* Change color on hover */
 }
 
 .post-header {
