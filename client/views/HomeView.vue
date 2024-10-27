@@ -13,7 +13,7 @@ const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 
     <section class="main-title">
       <h1 v-if="isLoggedIn" class="welcome-message">Welcome, {{ currentUsername }}!</h1>
-      <h1 v-else class="login-message">Please log in to see the posts</h1>
+      <h1 v-else class="login-message">Please log in!</h1>
     </section>
 
     <PostListComponent />
