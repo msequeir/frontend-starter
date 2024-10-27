@@ -145,7 +145,7 @@ class Routes {
   async getUpvoteCount(session: SessionDoc, id: string) {
     const oid = new ObjectId(id);
     const count = await Upvoting.getUpvoteCount(oid);
-    return { msg: "Upvote count is ", upvotes: count };
+    return { upvotes: count };
   }
 
   // FRIEND RELATED
@@ -219,7 +219,7 @@ class Routes {
       return { msg: "You have no favorites!" };
     }
     const favoritePosts = await Posting.getPostsByIds(favoritePostsIds);
-    return { msg: "These are your favorite posts", favorites: await Responses.posts(favoritePosts) };
+    return { favorites: await Responses.posts(favoritePosts) };
   }
 
   // ITINERARY RELATED

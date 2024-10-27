@@ -4,47 +4,45 @@ import { fetchy } from "../../utils/fetchy";
 
 const title = ref("");
 const tags = ref("");
-const rating = ref(0); // Rating as number
+const rating = ref(0);
 const itineraryId = ref("");
-const imageUrls = ref<string[]>([]); // Keep the array for image URLs
+const imageUrls = ref<string[]>([]);
 const newImageUrl = ref("");
-const emit = defineEmits(["refreshPosts"]);
-const showMessage = ref(false); // To control the visibility of the message
+const emit = defineEmits(["refreshPosts", "showErrorMessage"]); // Emit for error messages
+const showMessage = ref(false);
 
 const createPost = async () => {
   try {
-    // Send only the first image URL to the backend
     await fetchy("/api/posts", "POST", {
       body: {
         title: title.value,
         tags: tags.value,
         rating: rating.value,
         itineraryId: itineraryId.value,
-        imageUrl: imageUrls.value[0], // Use the first image URL in the array
+        imageUrl: imageUrls.value[0],
       },
     });
+    emit("refreshPosts");
+    emptyForm();
   } catch (_) {
     return;
   }
-  emit("refreshPosts");
-  emptyForm();
 };
 
 const addImageUrl = () => {
-  // Allow adding an image URL only if the array is empty
   if (newImageUrl.value && imageUrls.value.length === 0) {
     imageUrls.value.push(newImageUrl.value);
     newImageUrl.value = "";
-    showMessage.value = false; // Hide the message if an image is added
+    showMessage.value = false;
   } else if (imageUrls.value.length > 0) {
-    showMessage.value = true; // Show the message if trying to add another image
+    showMessage.value = true; // Show message if trying to add another image
+    emit("showErrorMessage", "You can only start with one image URL."); // Emit error message
   }
 };
 
 const removeImageUrl = (url: string) => {
   imageUrls.value = imageUrls.value.filter((img) => img !== url);
-  // Hide the message when the image is removed
-  showMessage.value = false;
+  showMessage.value = false; // Hide message when image is removed
 };
 
 const emptyForm = () => {
@@ -52,11 +50,11 @@ const emptyForm = () => {
   tags.value = "";
   rating.value = 0;
   itineraryId.value = "";
-  imageUrls.value = []; // Reset the image URLs array
-  showMessage.value = false; // Reset the message visibility
+  imageUrls.value = [];
+  newImageUrl.value = "";
+  showMessage.value = false;
 };
 
-// Function to set rating based on the star clicked
 const setRating = (stars: number) => {
   rating.value = stars;
 };
@@ -84,7 +82,6 @@ const setRating = (stars: number) => {
     <input id="newImageUrl" v-model="newImageUrl" placeholder="Add only 1 image URL" @keyup.enter="addImageUrl" />
     <button type="button" @click="addImageUrl" :disabled="imageUrls.length > 0">Add Image</button>
 
-    <!-- Show message only when trying to add an additional image -->
     <p v-if="showMessage" style="color: red">You can only start with one image URL.</p>
 
     <div>

@@ -33,7 +33,6 @@ async function getPosts(author?: string, title?: string) {
     if (author !== undefined || title !== undefined) {
       postResults = postResults.reverse();
     }
-    console.log(postResults);
   } catch (_) {
     return;
   }

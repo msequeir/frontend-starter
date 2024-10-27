@@ -12,8 +12,12 @@
 }
 
 .error {
-  background-color: #fa5252;
+  /* background-color: #40c057; */
+  color: black; /* or any other color that contrasts well with the background */
+  background-color: white; /* optional, for better readability */
 }
 .success {
-  background-color: #40c057;
+  /* background-color: #40c057; */
+  color: black; /* or any other color that contrasts well with the background */
+  background-color: white; /* optional, for better readability */
 }
