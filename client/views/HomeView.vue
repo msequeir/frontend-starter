@@ -3,45 +3,48 @@ import PostListComponent from "@/components/Post/PostListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
+// Access user store values
 const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 </script>
 
 <template>
-  <main>
-    <h1 class="main-title">Home Page</h1>
-    <section class="welcome-section">
-      <h1 v-if="isLoggedIn" class="welcome-message">Welcome {{ currentUsername }}!</h1>
-      <h1 v-else class="login-message">Please login!</h1>
+  <main class="home-main">
+    <!-- <h1 class="main-title">Home Page</h1> -->
+
+    <section class="main-title">
+      <h1 v-if="isLoggedIn" class="welcome-message">Welcome, {{ currentUsername }}!</h1>
+      <h1 v-else class="login-message">Please log in to see the posts</h1>
     </section>
+
     <PostListComponent />
   </main>
 </template>
 
 <style scoped>
-main {
+.home-main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  background-color: #e0f7f1; /* Change this to your preferred color */
-  min-height: 100vh; /* Full height */
+  padding: 1.5em;
+  background-color: #e0f7f1; /* Light and clean background */
+  min-height: 100vh;
 }
 
 .main-title {
-  font-size: 2.5em; /* Larger font size */
-  color: #333; /* Darker text color */
-  margin-bottom: 20px; /* Space below the title */
+  font-size: 1.5em;
+  color: #333;
+  margin-bottom: 1em;
 }
 
 .welcome-section {
-  margin-bottom: 40px; /* Space below the welcome section */
+  margin-bottom: 2em;
 }
 
 .welcome-message,
 .login-message {
-  font-size: 1.5em; /* Font size for the welcome/login messages */
-  color: #6fc5d6; /* Light blue color */
+  font-size: 1.5em;
+  color: #6fc5d6; /* Light blue text */
   text-align: center;
-  margin: 10px 0; /* Margin above and below the messages */
+  margin: 0.5em 0;
 }
 </style>

@@ -31,60 +31,62 @@ const emptyForm = () => {
 
 <template>
   <form @submit.prevent="createItinerary" class="create-itinerary-form">
-    <label for="content">Content:</label>
+    <label for="content" class="form-label">Content:</label>
     <textarea id="content" v-model="content" placeholder="Enter your itinerary content..." required></textarea>
-    <button type="submit" class="pure-button-primary">Create Itinerary</button>
+    <button type="submit" class="submit-button">Create Itinerary</button>
   </form>
 </template>
 
 <style scoped>
 .create-itinerary-form {
-  background-color: #f9f9f9; /* Light background color for the form */
-  border-radius: 1em;
+  background-color: #f4f4f4;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
-  padding: 1.5em;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-  max-width: 100%; /* Change to 100% to take full width of the parent */
-  width: 100%; /* Ensures the form takes full available width */
-  margin: 0 auto; /* Center the form on the page */
+  gap: 1em;
+  padding: 2em;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  font-family: "Poppins", sans-serif;
 }
 
-label {
-  font-size: 1.2em; /* Larger font size for the label */
-  color: #264653; /* Color that matches your theme */
+.form-label {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #2a9d8f;
+  margin-bottom: 0.25em;
 }
 
 textarea {
-  font-family: inherit;
   font-size: 1em;
-  height: 10em; /* Increased height for better content visibility */
-  padding: 0.75em; /* Increased padding for comfort */
-  border: 1px solid #dee2e6; /* Border for input areas */
-  border-radius: 4px;
-  resize: none; /* Prevent resizing */
-  transition: border-color 0.3s; /* Smooth transition for focus state */
-  width: 100%; /* Ensure the textarea takes full width */
+  padding: 0.75em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: none;
+  transition: border-color 0.3s;
+  width: 100%;
 }
 
 textarea:focus {
-  border-color: #2a9d8f; /* Accent color on focus */
-  outline: none; /* Remove default outline */
+  border-color: #2a9d8f;
+  outline: none;
 }
 
-button {
-  background-color: #2a9d8f; /* Accent color for buttons */
-  color: white; /* White text for buttons */
-  padding: 0.7em 1.2em; /* Padding for better button size */
-  border: none; /* Remove default border */
-  border-radius: 4px; /* Rounded corners */
-  font-size: 1em; /* Consistent font size */
-  cursor: pointer; /* Pointer cursor for buttons */
-  transition: background-color 0.3s; /* Smooth transition for hover state */
+.submit-button {
+  background-color: #2a9d8f;
+  color: #fff;
+  padding: 0.8em 1.4em;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-button:hover {
-  background-color: #e76f51; /* Darker shade on hover */
+.submit-button:hover {
+  background-color: #e76f51;
 }
 </style>

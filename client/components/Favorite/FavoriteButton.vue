@@ -37,17 +37,28 @@ const toggleFavorite = async () => {
 </script>
 
 <template>
-  <button @click="toggleFavorite" class="favorite-btn">
-    <span v-if="isFavorited">❤️</span>
-    <span v-else>🤍</span>
+  <button @click="toggleFavorite" :class="{ favorited: isFavorited, 'favorite-btn': true }">
+    <span>{{ isFavorited ? "❤️" : "🤍" }}</span>
   </button>
 </template>
 
 <style scoped>
 .favorite-btn {
-  cursor: pointer; /* Pointer cursor on hover */
-  font-size: 1.5em; /* Larger font size for the emoji */
-  display: flex; /* Use flexbox to center content */
-  align-items: center; /* Vertically center the content */
+  cursor: pointer;
+  font-size: 1.8em; /* Slightly larger font for better visibility */
+  padding: 0.3em;
+  border: none;
+  background: none;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease; /* Smooth transition for scale and color */
+}
+
+.favorite-btn:hover {
+  transform: scale(1.2); /* Scale up on hover for a subtle effect */
+}
+
+.favorited {
+  color: #e63946; /* Red color when favorited */
 }
 </style>

@@ -11,7 +11,8 @@ const { currentUsername } = storeToRefs(useUserStore());
 const deleteItinerary = async () => {
   try {
     await fetchy(`/api/itineraries/${props.itinerary._id}`, "DELETE");
-  } catch {
+  } catch (e) {
+    console.error("Failed to delete itinerary:", e);
     return;
   }
   emit("refreshItineraries");
@@ -20,56 +21,88 @@ const deleteItinerary = async () => {
 
 <template>
   <div class="itinerary-card">
-    <p class="itinerary">{{ props.itinerary.content }}</p>
+    <p class="itinerary-content">{{ props.itinerary.content }}</p>
     <div class="action-bar">
       <menu v-if="props.itinerary.author === currentUsername || props.itinerary.collaborators.includes(currentUsername)">
-        <li><button class="btn-small pure-button" @click="emit('editItinerary', props.itinerary._id)">Edit</button></li>
-        <li><button class="button-error btn-small pure-button" @click="deleteItinerary">Delete</button></li>
+        <li>
+          <button class="edit-button" @click="emit('editItinerary', props.itinerary._id)">Edit</button>
+        </li>
+        <li>
+          <button class="delete-button" @click="deleteItinerary">Delete</button>
+        </li>
       </menu>
-      <article class="timestamp">
+      <div class="timestamp">
         <p v-if="props.itinerary.dateCreated !== props.itinerary.dateUpdated">Edited on: {{ formatDate(props.itinerary.dateUpdated) }}</p>
         <p v-else>Created on: {{ formatDate(props.itinerary.dateCreated) }}</p>
-      </article>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .itinerary-card {
-  background-color: var(--base-bg);
-  border-radius: 1em;
-  padding: 1.5em; /* Added padding for better spacing */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-  margin-bottom: 1.5em; /* Space between itinerary cards */
+  background-color: #f4f4f4;
+  border-radius: 12px;
+  padding: 1.5em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5em;
+  font-family: "Poppins", sans-serif;
 }
 
-p {
-  margin: 0;
-}
-
-.itinerary {
-  font-weight: bolder;
-  font-size: 1.3em; /* Increased font size for better readability */
-  margin-bottom: 1em; /* Spacing below the content */
+.itinerary-content {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #2a9d8f;
+  margin-bottom: 1em;
 }
 
 .action-bar {
   display: flex;
-  justify-content: space-between; /* Space between buttons and timestamp */
+  justify-content: space-between;
   align-items: center;
 }
 
 menu {
-  list-style-type: none;
   display: flex;
-  gap: 1em; /* Spacing between buttons */
+  gap: 1em;
+  list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.edit-button,
+.delete-button {
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.edit-button {
+  background-color: #2a9d8f;
+  color: #fff;
+  border: none;
+}
+
+.edit-button:hover {
+  background-color: #21867a;
+}
+
+.delete-button {
+  background-color: #e76f51;
+  color: #fff;
+  border: none;
+}
+
+.delete-button:hover {
+  background-color: #d65c41;
 }
 
 .timestamp {
   font-size: 0.9em;
   font-style: italic;
-  color: #6c757d; /* Subtle color for the timestamp */
+  color: #6c757d;
 }
 </style>

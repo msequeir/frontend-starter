@@ -33,10 +33,10 @@ async function getFavoritePosts() {
     if (response.favorites) {
       posts.value = response.favorites.reverse(); // Update with the favorites array
     } else {
-      console.error(response.msg); // Log the message if no favorites
+      console.warn(response.msg || "No favorite posts found."); // Log warning if no favorites
     }
   } catch (error) {
-    console.error("Failed to load favorite posts", error);
+    console.error("Failed to load favorite posts:", error);
   } finally {
     loaded.value = true;
   }
@@ -58,43 +58,53 @@ onBeforeMount(async () => {
   </section>
 
   <!-- No favorite posts found message -->
-  <p v-else-if="loaded">No favorite posts found</p>
+  <p v-else-if="loaded" class="no-posts-msg">No favorite posts found</p>
 
   <!-- Loading state -->
-  <p v-else>Loading...</p>
+  <p v-else class="loading-msg">Loading your favorites...</p>
 </template>
 
 <style scoped>
 section {
   display: flex;
   flex-direction: column;
-  gap: 1em;
-}
-
-section,
-p,
-.row {
+  gap: 1.2em;
   margin: 0 auto;
   max-width: 60em;
 }
 
 article {
   background-color: var(--base-bg);
-  border-radius: 1em;
+  border-radius: 0.8em;
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
-  padding: 1em;
+  gap: 0.8em;
+  padding: 1.5em;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for a floating effect */
 }
 
 .posts {
-  padding: 1em;
+  padding: 1.5em;
 }
 
-.row {
-  display: flex;
-  justify-content: space-between;
-  margin: 0 auto;
-  max-width: 60em;
+.loading-msg,
+.no-posts-msg {
+  text-align: center;
+  font-size: 1.2em;
+  color: #606060; /* Subtle color for non-intrusive messages */
+  margin-top: 1em;
+}
+
+.loading-msg {
+  animation: fadeIn 1s ease-in-out infinite alternate; /* Fading animation for loading */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

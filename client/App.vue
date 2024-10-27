@@ -40,7 +40,7 @@ onBeforeMount(async () => {
       <div class="nav-links">
         <ul>
           <li v-if="isLoggedIn">
-            <RouterLink :to="{ name: 'Favorites' }" :class="{ underline: currentRouteName == 'Favorites' }"> Favorites ❤️ </RouterLink>
+            <RouterLink :to="{ name: 'Favorites' }" :class="{ underline: currentRouteName == 'Favorites' }"> Favorites </RouterLink>
             <RouterLink :to="{ name: 'Itinerary' }" :class="{ underline: currentRouteName == 'Itinerary' }"> Itinerary </RouterLink>
             <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
           </li>

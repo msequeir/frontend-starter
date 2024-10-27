@@ -18,7 +18,7 @@ function handleSubmit() {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit" class="pure-form">
+  <form @submit.prevent="handleSubmit" class="search-form">
     <fieldset>
       <legend>Search by Author</legend>
 
@@ -27,20 +27,66 @@ function handleSubmit() {
       <input id="author" type="text" v-model="author" placeholder="Username" />
 
       <!-- Submit Button -->
-      <button type="submit" class="pure-button pure-button-primary">Search</button>
+      <button type="submit" class="search-button">Search</button>
     </fieldset>
   </form>
 </template>
 
 <style scoped>
-form {
+.search-form {
   display: flex;
-  gap: 0.5em;
-  padding: 1em;
-  align-items: center;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1.5em;
+  background-color: #f7fafc; /* Light background color for emphasis */
+  border-radius: 0.5em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  border: none; /* Remove default border */
+}
+
+legend {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #264653; /* Darker color for contrast */
+  margin-bottom: 0.5em;
 }
 
 label {
+  font-size: 1em;
+  color: #264653; /* Consistent color scheme */
   margin-right: 0.5em;
+}
+
+input {
+  padding: 0.5em;
+  border: 1px solid #d1d5db;
+  border-radius: 0.3em;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2a9d8f; /* Highlight on focus */
+  box-shadow: 0 0 5px rgba(42, 157, 143, 0.2);
+}
+
+.search-button {
+  padding: 0.7em 1.2em;
+  color: #ffffff;
+  background-color: #2a9d8f; /* Consistent button color */
+  border: none;
+  border-radius: 0.3em;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #21867a; /* Darker shade on hover */
 }
 </style>

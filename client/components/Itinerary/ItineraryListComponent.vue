@@ -26,6 +26,7 @@ async function getItineraries(author?: string) {
   let itineraryResults;
   try {
     itineraryResults = await fetchy("/api/itineraries", "GET", { query });
+    itineraryResults = itineraryResults.reverse();
   } catch (_) {
     return;
   }
@@ -61,7 +62,7 @@ onBeforeMount(async () => {
 
   <!-- Itineraries section displaying each itinerary, with edit functionality -->
   <section class="itineraries" v-if="loaded && itineraries.length !== 0">
-    <article v-for="itinerary in itineraries" :key="itinerary._id">
+    <article v-for="itinerary in itineraries" :key="itinerary._id" class="itinerary-card">
       <!-- Conditionally show either ItineraryComponent or EditItineraryForm based on editing state -->
       <ItineraryComponent v-if="editing !== itinerary._id" :itinerary="itinerary" @refreshItineraries="getItineraries" @editItinerary="updateEditing" />
       <EditItineraryForm v-else :itinerary="itinerary" @refreshItineraries="getItineraries" @editItinerary="updateEditing" />
@@ -102,6 +103,7 @@ p,
 .header-title {
   color: #264653; /* Color to match your theme */
   font-size: 1.5em; /* Larger font size for headers */
+  font-weight: bold;
   margin-bottom: 0.5em; /* Spacing below the header */
 }
 
@@ -111,7 +113,7 @@ p,
   align-items: center; /* Center align items vertically */
 }
 
-article {
+.itinerary-card {
   background-color: var(--base-bg);
   border-radius: 1em;
   display: flex;

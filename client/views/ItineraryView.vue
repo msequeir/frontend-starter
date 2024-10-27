@@ -10,7 +10,7 @@ const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
   <main>
     <h1>Itineraries</h1>
     <section>
-      <h1 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h1>
+      <h1 v-if="isLoggedIn"></h1>
       <h1 v-else>Please login!</h1>
     </section>
     <ItineraryListComponent />
@@ -23,7 +23,7 @@ main {
   flex-direction: column;
   align-items: center;
   padding: 2em;
-  background-color: #f9f9f9; /* Light background color for the page */
+  background-color: #ffffff; /* Updated to match the light and clean aesthetic */
 }
 
 h1 {
@@ -34,11 +34,6 @@ h1 {
 }
 
 section {
-  background: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-  border-radius: 8px;
-  padding: 2em;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
-  margin-bottom: 2em;
 }
 
 h1[v-if="isLoggedIn"],
