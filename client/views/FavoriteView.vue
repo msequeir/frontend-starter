@@ -12,7 +12,7 @@ const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
     <h1 class="page-title">Favorites Page</h1>
 
     <section class="welcome-section">
-      <h2 v-if="isLoggedIn">Welcome, {{ currentUsername }}!</h2>
+      <h2 v-if="isLoggedIn"></h2>
       <h2 v-else>Please login to view your favorite posts</h2>
     </section>
 
