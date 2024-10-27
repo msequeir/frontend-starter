@@ -219,7 +219,7 @@ class Routes {
       return { msg: "You have no favorites!" };
     }
     const favoritePosts = await Posting.getPostsByIds(favoritePostsIds);
-    return { msg: "These are your favorite posts", favorites: favoritePosts };
+    return { msg: "These are your favorite posts", favorites: await Responses.posts(favoritePosts) };
   }
 
   // ITINERARY RELATED
